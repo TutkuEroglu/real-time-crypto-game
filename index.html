@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>
+    
+
+    <div class="card">
+        <div class="cardCategory">
+            <h1 id="money"></h1>
+            <button class="btn" id="reset">New start</button>
+        </div>
+        <div class="cardCategory">
+            <button class="btn" id="toggleMenu">Open Menu</button>
+        </div>
+    </div>
+
+    <div class="modal" id="myModal">
+        <div class="modal-content">
+          <span class="close" id="closeModal">&times;</span>
+          <div class="modal-category">
+            <div class="category-img">
+                <img class="buyEverything" src="https://yandex-images.clstorage.net/5gun1T218/49cacfUG7/vE0LG6U-wSA3-OyA-YFsUqVknOectlFYUMhZmKmx0U_nedqgTexzqmOF3134qjV2EsR6MOO7B2bW2-JHENk4j71cbg6UE8VRSqXA4amhYEatEenr2Mc5SSShUOiV9fVj11ybGf1k8nvDMQK8JW6ZJy_EBwWDixo6pqfnJkSwLM9E6A9zcWrYICcwSWD1bYAaZS2s40DHJWUgLAzMtShJusaNc_WV-CLTh8niPKUGjctPXaM1o9sGMkNfp5JRMFQniCkLDznKJEjTtOVkdTm07i25eIssj61pTGBMrLWYcRayzXdNVayu0y892tRldrGbl43raROD0jJTLz_W1WAkX9jxAwNpupT4S0AxoLFFdOJtxYzTKKPZNYSoFDyViDHOfiXT9TGklq9rgQKsJXKZm8NRe6nf116ew7fHgnVgXNcwjQcDNdoA1JdAraBZxRz-ATUMg4zf5ZnkrGzM9RAVBroRj4Uh8P5rGxmK0KUayW_7uV8pM_NqBn8Do67NkCST4L2vb23avCQHOJ1orVno8tWJNOMsPw15vNRYxOl0LX4yAU-FSYiup_sp9jSNoqUnT8n36QPnMqpXezv6UTy4F7SJZ4uJEuzI00TlfKU1sIZZrZhvrO_xcZD0zPRJKE2yfiGH1VXE8mfz0erIgeL9H3upf02TIyLqBwtjes2MqIu0KavzyarIRD9QEXipnTxSHcEQQ9DjedHgiFhMwWSJ6pLJ8znZIOZHtzVikIGCjevT2X9FK4tOMp9PezKhwMAzUIkfi6le3Djn8O3k1UEMmp0JNJNQf2HdgOj49K2UnW5y-ffdYfQi23utwhAZ3u3rQ9mbdSeLxk6bK2M-VWBkV3QF3885shAQn9iZ9DntxMYBDfRXVDNplchkYNDp9KlyGnGLIbFcWv8LGQ7MUW6xV1vdk4lbHy7Km_8nnhGcpOcAfc8rvXKwPIfQFewBSZQW6al8gwSjBcWghNTYHZiU"/>
+                <div class="overlay-text">Buy Business</div>
+            </div>
+          </div>
+        </div>
+    </div>
+  
+    <table id="coinTable">
+        <thead>
+            <tr>
+                <th>Coin</th>
+                <th>Price (TRY)</th>
+                <th>24h Change</th>
+                <th>24h MinPrice</th>
+                <th>24h MaxPrice</th>
+                <th>24h Volume</th>
+                <th>Buy</th>
+                <th>Sell</th>
+                <th>Basket</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <script src="app.js"></script>
+</body>
+
+</html>
