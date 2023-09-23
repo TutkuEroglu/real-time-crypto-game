@@ -3,12 +3,124 @@ const resetButton = document.querySelector("#reset");
 const menuButton = document.querySelector("#toggleMenu");
 const modal = document.getElementById("myModal");
 const closeModal = document.getElementById("closeModal");
+const portfolioTitle = document.getElementById("portfolio");
+const portfolioMenu = document.getElementById("portfolioMenu");
+const historyTitle = document.getElementById("history");
+const historyMenu = document.getElementById("historyMenu");
 
 function start() {
   const storedMoney = localStorage.getItem("moneyData");
   if (storedMoney == null) {
     localStorage.setItem("moneyData", 275000);
   }
+}
+
+const successStatus = "Success";
+const rejectStatus = "Rejected";
+const buyAction = "Buy";
+const sellAction = "Sell";
+
+historyTitle.addEventListener("click", () => {
+  if (
+    historyMenu.style.opacity === "1" &&
+    historyMenu.style.display === "block"
+  ) {
+    historyMenu.style.opacity = "0";
+    historyMenu.style.display = "none";
+    clearHistory();
+  } else {
+    historyMenu.style.opacity = "1";
+    historyMenu.style.display = "block";
+    renderHistory();
+  }
+});
+
+async function renderHistory() {
+  const tableBody = document.querySelector("#boughtCoinTable tbody");
+  const userCoins = JSON.parse(localStorage.getItem("coinAction")) || [];
+
+  userCoins.forEach((val) => {
+    const row = document.createElement("tr");
+    const statusClass = val.status === "Success" ? "green" : "red";
+    row.innerHTML = `
+            <td>${val.symbol}</td>
+            <td>${val.price}</td>
+            <td>${val.amount}</td>
+            <td>${val.date}</td>
+            <td>${val.action}</td>
+            <td class="${statusClass}">${val.status}</td>
+        `;
+    tableBody.appendChild(row);
+  });
+}
+
+function clearHistory() {
+  const tableBody = document.querySelector("#boughtCoinTable tbody");
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild);
+  }
+}
+
+let portfolioRendered = false;
+
+portfolioTitle.addEventListener("click", () => {
+  if (
+    portfolioMenu.style.opacity === "1" &&
+    portfolioMenu.style.display === "block"
+  ) {
+    portfolioMenu.style.opacity = "0";
+    portfolioMenu.style.display = "none";
+    clearPortfolioTable();
+  } else {
+    portfolioMenu.style.opacity = "1";
+    portfolioMenu.style.display = "block";
+    renderPortfolio();
+    portfolioRendered = true;
+  }
+});
+
+function clearPortfolioTable() {
+  const tableBody = document.querySelector("#ownCoinTable tbody");
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild);
+  }
+}
+
+async function renderPortfolio() {
+  const coinData = await fetchCoinData();
+  const tableBody = document.querySelector("#ownCoinTable tbody");
+
+  coinData.forEach((coin) => {
+    coin.basket = 0;
+  });
+
+  const userCoins = JSON.parse(localStorage.getItem("coinPurchases")) || [];
+
+  coinData.forEach((coin) => {
+    userCoins.forEach((val) => {
+      if (coin.symbol === val.symbol && val.amount > 0) {
+        coin.basket += val.amount;
+      }
+    });
+
+    userCoins.forEach((val) => {
+      if (coin.symbol === val.symbol && val.amount > 0) {
+        const gain = (coin.askPrice - val.price) * val.amount;
+        const row = document.createElement("tr");
+        const colorClass = gain >= 0 ? "green" : "red";
+        row.innerHTML = `
+            <td>${coin.symbol}</td>
+            <td>${val.price}</td>
+            <td>${coin.askPrice}</td>
+            <td>${coin.basket}</td>
+            <td class="${colorClass}">${gain.toFixed(2)}₺</td>
+        `;
+        tableBody.appendChild(row);
+      }
+    });
+  });
+  const storedMoney = localStorage.getItem("moneyData");
+  moneyDiv.textContent = `Your cash: ${storedMoney}₺`;
 }
 
 menuButton.addEventListener("click", () => {
@@ -33,6 +145,7 @@ resetButton.addEventListener("click", resetMoney);
 async function resetMoney() {
   localStorage.removeItem("moneyData");
   localStorage.removeItem("coinPurchases");
+  localStorage.removeItem("coinAction");
   start();
   const tbody = document.querySelector("#coinTable tbody");
   const rows = tbody.querySelectorAll("tr");
@@ -43,6 +156,30 @@ async function resetMoney() {
   });
   moneyDiv.textContent = `Your cash: 275000₺`;
   alert("Good Luck :)");
+}
+
+function storeAllAction(coinSymbol, quantity, purchasePrice, action, status) {
+  const storedAction = JSON.parse(localStorage.getItem("coinAction")) || [];
+
+  const transaction = new Date();
+
+  const purchaseAction = {
+    symbol: coinSymbol,
+    amount: quantity,
+    price: purchasePrice,
+    date: transaction.toLocaleString(),
+    action: action,
+    status: status,
+  };
+
+  if (
+    (action === "Buy" || action === "Sell") &&
+    (status === "Success" || status === "Rejected")
+  ) {
+    storedAction.unshift(purchaseAction);
+  }
+
+  localStorage.setItem("coinAction", JSON.stringify(storedAction));
 }
 
 function storeCoinPurchase(coinSymbol, quantity, purchasePrice) {
@@ -115,8 +252,10 @@ document
             parseFloat(row.querySelector("td:last-child").textContent) +
             quantity;
           storeCoinPurchase(coin, quantity, coinPrice);
+          storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
         } else {
           alert("Insufficient balance. Take a smaller amount.");
+          storeAllAction(coin, quantity, coinPrice, buyAction, rejectStatus);
         }
       } else {
         alert("Invalid amount. Please enter a valid amount.");
@@ -143,8 +282,8 @@ document
             .querySelector("td:nth-child(2)")
             .textContent.replace(/[^0-9.]/g, "")
         );
-        const cost = (quantity * coinPrice) ;
-        const sellCost = cost%0.20;
+        const cost = quantity * coinPrice;
+        const sellCost = cost % 0.2;
         if (basket - quantity >= 0) {
           const updatedMoney = parseFloat(storedMoney) + cost - sellCost;
           localStorage.setItem("moneyData", updatedMoney.toFixed(2));
@@ -153,8 +292,10 @@ document
             parseFloat(row.querySelector("td:last-child").textContent) -
             quantity;
           storeCoinSell(coin, quantity, coinPrice);
+          storeAllAction(coin, quantity, coinPrice, sellAction, successStatus);
         } else {
           alert("You don't have the coin you want to sell.");
+          storeAllAction(coin, quantity, coinPrice, sellAction, rejectStatus);
         }
       } else {
         alert("Invalid amount. Please enter a valid amount.");
