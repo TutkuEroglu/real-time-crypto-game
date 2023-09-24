@@ -14,6 +14,58 @@ function start() {
     localStorage.setItem("moneyData", 275000);
   }
 }
+let currentPage = 1;
+let totalPages = 50;
+
+function renderHistoryPage() {
+  let history = JSON.parse(localStorage.getItem("coinAction")) || [];
+
+  updatePageButtons();
+  updatePage(history);
+}
+
+function updatePageButtons() {
+  const prevPageButton = document.querySelector("#prevPageButton");
+  const nextPageButton = document.querySelector("#nextPageButton");
+  const currentPageElement = document.querySelector("#currentPage");
+  const totalPagesElement = document.querySelector("#totalPages");
+
+  currentPageElement.textContent = currentPage;
+  totalPagesElement.textContent = totalPages;
+
+  prevPageButton.disabled = currentPage === 1;
+  nextPageButton.disabled = currentPage === totalPages;
+}
+
+function updatePage(history) {
+  currentPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const itemsPerPage = 10;
+
+  clearHistory();
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedData = history.slice(startIndex, endIndex);
+  renderHistory(displayedData);
+
+  updatePageButtons();
+}
+
+updatePageButtons();
+
+document.querySelector("#prevPageButton").addEventListener("click", () => {
+  if (currentPage > 1) {
+    currentPage--;
+    updatePage();
+  }
+});
+
+document.querySelector("#nextPageButton").addEventListener("click", () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    updatePage();
+  }
+});
 
 const successStatus = "Success";
 const rejectStatus = "Rejected";
@@ -31,15 +83,14 @@ historyTitle.addEventListener("click", () => {
   } else {
     historyMenu.style.opacity = "1";
     historyMenu.style.display = "block";
-    renderHistory();
+    updatePage();
   }
 });
 
-async function renderHistory() {
+async function renderHistory(displayedData) {
   const tableBody = document.querySelector("#boughtCoinTable tbody");
-  const userCoins = JSON.parse(localStorage.getItem("coinAction")) || [];
 
-  userCoins.forEach((val) => {
+  displayedData.forEach((val) => {
     const row = document.createElement("tr");
     const statusClass = val.status === "Success" ? "green" : "red";
     row.innerHTML = `
@@ -62,6 +113,58 @@ function clearHistory() {
 }
 
 let portfolioRendered = false;
+let currentPageFolio = 1;
+let totalPagesFolio = 50;
+function renderPortFolioPage() {
+  let portfolio = JSON.parse(localStorage.getItem("coinPurchases")) || [];
+
+  updatePageButtonsFolio();
+  updatePageFolio(portfolio);
+}
+
+function updatePageButtonsFolio() {
+  const prevPageButton = document.querySelector("#prevPageButtonFolio");
+  const nextPageButton = document.querySelector("#nextPageButtonFolio");
+  const currentPageElement = document.querySelector("#currentPageFolio");
+  const totalPagesElement = document.querySelector("#totalPagesFolio");
+
+  currentPageElement.textContent = currentPageFolio;
+  totalPagesElement.textContent = totalPagesFolio;
+
+  prevPageButton.disabled = currentPageFolio === 1;
+  nextPageButton.disabled = currentPageFolio === totalPagesFolio;
+}
+
+function updatePageFolio(portfolio) {
+  currentPageFolio = Math.min(Math.max(currentPageFolio, 1), totalPagesFolio);
+
+  const itemsPerPageFolio = 10;
+  clearPortfolioTable();
+
+  const startIndex = (currentPageFolio - 1) * itemsPerPageFolio;
+  const endIndex = startIndex + itemsPerPageFolio;
+  const displayedDataFolio = portfolio.slice(startIndex, endIndex);
+
+  renderPortfolio(displayedDataFolio);
+
+  updatePageButtonsFolio();
+}
+
+updatePageButtonsFolio();
+
+document.querySelector("#prevPageButtonFolio").addEventListener("click", () => {
+  if (currentPageFolio > 1) {
+    currentPageFolio--;
+    updatePageFolio();
+  }
+});
+
+document.querySelector("#nextPageButtonFolio").addEventListener("click", () => {
+  if (currentPageFolio < totalPagesFolio) {
+    currentPageFolio++;
+    updatePageFolio();
+  }
+});
 
 portfolioTitle.addEventListener("click", () => {
   if (
@@ -74,8 +177,7 @@ portfolioTitle.addEventListener("click", () => {
   } else {
     portfolioMenu.style.opacity = "1";
     portfolioMenu.style.display = "block";
-    renderPortfolio();
-    portfolioRendered = true;
+    renderPortFolioPage();
   }
 });
 
@@ -86,9 +188,11 @@ function clearPortfolioTable() {
   }
 }
 
-async function renderPortfolio() {
+async function renderPortfolio(displayedDataFolio) {
   const coinData = await fetchCoinData();
   const tableBody = document.querySelector("#ownCoinTable tbody");
+
+  clearPortfolioTable();
 
   coinData.forEach((coin) => {
     coin.basket = 0;
@@ -103,7 +207,7 @@ async function renderPortfolio() {
       }
     });
 
-    userCoins.forEach((val) => {
+    displayedDataFolio.forEach((val) => {
       if (coin.symbol === val.symbol && val.amount > 0) {
         const gain = (coin.askPrice - val.price) * val.amount;
         const row = document.createElement("tr");
@@ -178,7 +282,6 @@ function storeAllAction(coinSymbol, quantity, purchasePrice, action, status) {
   ) {
     storedAction.unshift(purchaseAction);
   }
-
   localStorage.setItem("coinAction", JSON.stringify(storedAction));
 }
 
@@ -188,7 +291,10 @@ function storeCoinPurchase(coinSymbol, quantity, purchasePrice) {
   storedData.forEach((val) => {
     if (val.symbol === coinSymbol) {
       val.amount += quantity;
-      val.price = (purchasePrice + val.price) / 2;
+      val.price = (
+        (val.price * val.amount + quantity * purchasePrice) /
+        (val.amount + quantity)
+      ).toFixed(2);
       coinExists = true;
     }
   });
@@ -253,6 +359,7 @@ document
             quantity;
           storeCoinPurchase(coin, quantity, coinPrice);
           storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
+          renderPortFolioPage();
         } else {
           alert("Insufficient balance. Take a smaller amount.");
           storeAllAction(coin, quantity, coinPrice, buyAction, rejectStatus);
@@ -382,4 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCoinTable();
   start();
   setInterval(updateCoinPrices, 5000);
+  setInterval(renderHistoryPage, 1000);
+  setInterval(renderPortFolioPage, 10000);
 });
