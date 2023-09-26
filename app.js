@@ -191,6 +191,11 @@ function clearPortfolioTable() {
 async function renderPortfolio(displayedDataFolio) {
   const coinData = await fetchCoinData();
   const tableBody = document.querySelector("#ownCoinTable tbody");
+  const totalBought = document.querySelector("#totalBought");
+  const totalCurrent = document.querySelector("#totalCurrent");
+
+  totalBought.textContent = "Total Spent: 0.00₺";
+  totalCurrent.textContent = "Total Current: 0.00₺";
 
   clearPortfolioTable();
 
@@ -199,6 +204,9 @@ async function renderPortfolio(displayedDataFolio) {
   });
 
   const userCoins = JSON.parse(localStorage.getItem("coinPurchases")) || [];
+
+  let totalSpent = 0;
+  let totalCurrentValue = 0;
 
   coinData.forEach((coin) => {
     userCoins.forEach((val) => {
@@ -210,12 +218,23 @@ async function renderPortfolio(displayedDataFolio) {
     displayedDataFolio.forEach((val) => {
       if (coin.symbol === val.symbol && val.amount > 0) {
         const gain = (coin.askPrice - val.price) * val.amount;
+        const currentTotal = coin.askPrice * val.amount;
+
+        totalSpent += val.tPrice;
+        totalCurrentValue += currentTotal;
+
         const row = document.createElement("tr");
         const colorClass = gain >= 0 ? "green" : "red";
+        const gainClass = currentTotal >= val.tPrice ? "green" : "red";
+        const totalClass = totalCurrentValue >= totalSpent ? "green" : "red";
+        totalBought.classList.add("green");
+        totalCurrent.classList.add(totalClass);
         row.innerHTML = `
             <td>${coin.symbol}</td>
-            <td>${val.price}</td>
-            <td>${coin.askPrice}</td>
+            <td>${val.price}₺</td>
+            <td>${coin.askPrice}₺</td>
+            <td>${val.tPrice}₺</td>
+            <td class="${gainClass}">${currentTotal.toFixed(2)}₺</td>
             <td>${coin.basket}</td>
             <td class="${colorClass}">${gain.toFixed(2)}₺</td>
         `;
@@ -223,6 +242,9 @@ async function renderPortfolio(displayedDataFolio) {
       }
     });
   });
+
+  totalBought.textContent = `Total Spent: ${totalSpent.toFixed(2)}₺`;
+  totalCurrent.textContent = `Total Current: ${totalCurrentValue.toFixed(2)}₺`;
   const storedMoney = localStorage.getItem("moneyData");
   moneyDiv.textContent = `Your cash: ${storedMoney}₺`;
 }
@@ -285,38 +307,40 @@ function storeAllAction(coinSymbol, quantity, purchasePrice, action, status) {
   localStorage.setItem("coinAction", JSON.stringify(storedAction));
 }
 
-function storeCoinPurchase(coinSymbol, quantity, purchasePrice) {
+function storeCoinPurchase(coinSymbol, quantity, purchasePrice, totalPrice) {
   const storedData = JSON.parse(localStorage.getItem("coinPurchases")) || [];
   let coinExists = false;
+
   storedData.forEach((val) => {
     if (val.symbol === coinSymbol) {
       val.amount += quantity;
-      val.price = (
-        (val.price * val.amount + quantity * purchasePrice) /
-        (val.amount + quantity)
-      ).toFixed(2);
+      val.price = (val.tPrice + totalPrice) / val.amount;
+      val.tPrice += totalPrice;
       coinExists = true;
     }
   });
+
   if (!coinExists) {
     const purchaseData = {
       symbol: coinSymbol,
       amount: quantity,
       price: purchasePrice,
+      tPrice: totalPrice,
     };
     storedData.push(purchaseData);
-  } else {
   }
+
   localStorage.setItem("coinPurchases", JSON.stringify(storedData));
 }
 
-function storeCoinSell(coinSymbol, quantity) {
+function storeCoinSell(coinSymbol, quantity, totalPrice) {
   const storedData = JSON.parse(localStorage.getItem("coinPurchases")) || [];
   const itemsToRemove = [];
   storedData.forEach((val, index) => {
     if (val.symbol === coinSymbol) {
       val.amount -= quantity;
-      val.price = val.price;
+      val.tPrice = parseFloat((val.tPrice - totalPrice).toFixed(2));
+      val.price = parseFloat((val.tPrice / val.amount).toFixed(2));
 
       if (val.amount === 0) {
         itemsToRemove.push(index);
@@ -357,7 +381,7 @@ document
           row.querySelector("td:last-child").textContent =
             parseFloat(row.querySelector("td:last-child").textContent) +
             quantity;
-          storeCoinPurchase(coin, quantity, coinPrice);
+          storeCoinPurchase(coin, quantity, coinPrice, cost);
           storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
           renderPortFolioPage();
         } else {
@@ -390,7 +414,7 @@ document
             .textContent.replace(/[^0-9.]/g, "")
         );
         const cost = quantity * coinPrice;
-        const sellCost = cost % 0.2;
+        const sellCost = coinPrice % 0.2;
         if (basket - quantity >= 0) {
           const updatedMoney = parseFloat(storedMoney) + cost - sellCost;
           localStorage.setItem("moneyData", updatedMoney.toFixed(2));
@@ -398,7 +422,7 @@ document
           row.querySelector("td:last-child").textContent =
             parseFloat(row.querySelector("td:last-child").textContent) -
             quantity;
-          storeCoinSell(coin, quantity, coinPrice);
+          storeCoinSell(coin, quantity, cost);
           storeAllAction(coin, quantity, coinPrice, sellAction, successStatus);
         } else {
           alert("You don't have the coin you want to sell.");
@@ -412,7 +436,8 @@ document
   });
 
 async function fetchCoinData() {
-  const response = await fetch("https://data.binance.com/api/v3/ticker/24hr");
+  const url = "https://data.binance.com/api/v3/ticker/24hr"
+  const response = await fetch(url);
   const data = await response.json();
   let newData = [];
   data.forEach((val) => {
