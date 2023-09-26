@@ -254,6 +254,15 @@ body {
   background-color: #d4001c;
 }
 
+#total {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 18px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
 .green {
   color: green;
 }
