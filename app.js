@@ -233,7 +233,7 @@ async function renderPortfolio(displayedDataFolio) {
             <td>${coin.symbol}</td>
             <td>${val.price.toFixed(2)}₺</td>
             <td>${coin.askPrice}₺</td>
-            <td>${val.tPrice}₺</td>
+            <td>${val.tPrice.toFixed(2)}₺</td>
             <td class="${gainClass}">${currentTotal.toFixed(2)}₺</td>
             <td>${coin.basket}</td>
             <td class="${colorClass}">${gain.toFixed(2)}₺</td>
