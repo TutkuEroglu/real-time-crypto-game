@@ -11,7 +11,7 @@ const historyMenu = document.getElementById("historyMenu");
 function start() {
   const storedMoney = localStorage.getItem("moneyData");
   if (storedMoney == null) {
-    localStorage.setItem("moneyData", 275000);
+    localStorage.setItem("moneyData", 300000);
   }
 }
 let currentPage = 1;
@@ -280,7 +280,7 @@ async function resetMoney() {
     const lastTd = tds[tds.length - 1];
     lastTd.textContent = 0;
   });
-  moneyDiv.textContent = `Your cash: 275000₺`;
+  moneyDiv.textContent = `Your cash: 300000₺`;
   alert("Good Luck :)");
 }
 
@@ -313,9 +313,9 @@ function storeCoinPurchase(coinSymbol, quantity, purchasePrice, totalPrice) {
 
   storedData.forEach((val) => {
     if (val.symbol === coinSymbol) {
+      val.price = parseFloat(((val.price * val.amount + purchasePrice * quantity) / (val.amount+quantity)).toFixed(2));
       val.amount += quantity;
-      val.price = (val.tPrice + totalPrice) / val.amount;
-      val.tPrice += totalPrice;
+      val.tPrice += parseFloat(totalPrice.toFixed(2));
       coinExists = true;
     }
   });
@@ -340,7 +340,7 @@ function storeCoinSell(coinSymbol, quantity, totalPrice) {
     if (val.symbol === coinSymbol) {
       val.amount -= quantity;
       val.tPrice = parseFloat((val.tPrice - totalPrice).toFixed(2));
-      val.price = parseFloat((val.tPrice / val.amount).toFixed(2));
+      val.price = parseFloat((val.price).toFixed(2));
 
       if (val.amount === 0) {
         itemsToRemove.push(index);
