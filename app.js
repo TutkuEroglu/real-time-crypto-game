@@ -231,7 +231,7 @@ async function renderPortfolio(displayedDataFolio) {
         totalCurrent.classList.add(totalClass);
         row.innerHTML = `
             <td>${coin.symbol}</td>
-            <td>${val.price}₺</td>
+            <td>${val.price.toFixed(2)}₺</td>
             <td>${coin.askPrice}₺</td>
             <td>${val.tPrice}₺</td>
             <td class="${gainClass}">${currentTotal.toFixed(2)}₺</td>
@@ -375,9 +375,9 @@ document
         );
         const cost = quantity * coinPrice;
         if (storedMoney >= cost) {
-          const updatedValue = storedMoney - cost;
-          localStorage.setItem("moneyData", updatedValue.toFixed(2));
-          moneyDiv.textContent = `Your cash: ${updatedValue.toFixed(2)}₺`;
+          const updatedValue = (storedMoney - cost).toFixed(2);
+          localStorage.setItem("moneyData", updatedValue);
+          moneyDiv.textContent = `Your cash: ${updatedValue}₺`;
           row.querySelector("td:last-child").textContent =
             parseFloat(row.querySelector("td:last-child").textContent) +
             quantity;
