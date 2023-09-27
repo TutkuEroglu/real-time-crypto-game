@@ -13,7 +13,7 @@ function start() {
   const storedMoney = localStorage.getItem("moneyData");
 
   if (storedMoney == null) {
-    localStorage.setItem("moneyData", 300000);
+    localStorage.setItem("moneyData", 310000);
   }
 }
 
@@ -30,7 +30,7 @@ businesses.forEach((business, index) => {
 
   const overlayText = document.createElement("div");
   overlayText.classList.add("overlay-text");
-  overlayText.textContent = `Buy ${business.name}`;
+  overlayText.textContent = `${business.name}`;
 
   const businessText = document.createElement("span");
   businessText.classList.add("businessText");
@@ -50,41 +50,39 @@ menuButton.addEventListener("click", openMenu);
 
 modalCategories.forEach((modalCategory, index) => {
   modalCategory.addEventListener("click", () => {
-  const categoryName = businesses[index].name;
-  const ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
-  
-  
+    const categoryName = businesses[index].name;
+    const ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
 
-  ownBusiness.forEach(val => {
-      if(categoryName == val.bName){
-          if(val.bStatus){
-            const storedMoney = parseFloat(localStorage.getItem("moneyData"));
-            if(storedMoney >= val.bPrice){
-              const newMoney = (storedMoney-val.bPrice).toFixed(2);
-              localStorage.setItem("moneyData", newMoney);
-              moneyDiv.textContent = `Your cash: ${newMoney}₺`;
-              val.bStatus = false;
-              val.bPurchaseDate = new Date();
-              localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
-              alert("The purchase is successful. Good luck!")
-            } else {
-              alert("You don't have enough money")
-            }
+    ownBusiness.forEach((val) => {
+      if (categoryName == val.bName) {
+        if (val.bStatus) {
+          const storedMoney = parseFloat(localStorage.getItem("moneyData"));
+          if (storedMoney >= val.bPrice) {
+            const newMoney = (storedMoney - val.bPrice).toFixed(2);
+            localStorage.setItem("moneyData", newMoney);
+            moneyDiv.textContent = `Your cash: ${newMoney}₺`;
+            val.bStatus = false;
+            val.bPurchaseDate = new Date();
+            localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
+            alert("The purchase is successful. Good luck!");
           } else {
-            calculateEarnings(categoryName);
+            alert("You don't have enough money");
           }
+        } else {
+          calculateEarnings(categoryName);
+        }
       }
-  })
+    });
   });
 });
 
 function calculateEarnings(businessName) {
   const ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
   const storedMoney = parseFloat(localStorage.getItem("moneyData"));
-  let totalEarnings = 0
+  let totalEarnings = 0;
   let now = new Date();
 
-  ownBusiness.forEach(val => {
+  ownBusiness.forEach((val) => {
     if (val.bName === businessName && val.bPurchaseDate) {
       if (!val.bLastCollectionDate) {
         const purchaseDate = new Date(val.bPurchaseDate);
@@ -95,20 +93,26 @@ function calculateEarnings(businessName) {
         const millisecondsInAMinute = 1000 * 60;
         const millisecondsInASecond = 1000;
         const days = Math.floor(elapsedTime / millisecondsInADay);
-        const hours = Math.floor((elapsedTime % millisecondsInADay) / millisecondsInAnHour);
-        const minutes = Math.floor((elapsedTime % millisecondsInAnHour) / millisecondsInAMinute);
-        const seconds = Math.floor((elapsedTime % millisecondsInAMinute) / millisecondsInASecond);
-        if (days > 0){
-          totalEarnings += (val.bGainHour*24*days)
+        const hours = Math.floor(
+          (elapsedTime % millisecondsInADay) / millisecondsInAnHour
+        );
+        const minutes = Math.floor(
+          (elapsedTime % millisecondsInAnHour) / millisecondsInAMinute
+        );
+        const seconds = Math.floor(
+          (elapsedTime % millisecondsInAMinute) / millisecondsInASecond
+        );
+        if (days > 0) {
+          totalEarnings += val.bGainHour * 24 * days;
         }
-        if (hours > 0){
-          totalEarnings += val.bGainHour*hours
+        if (hours > 0) {
+          totalEarnings += val.bGainHour * hours;
         }
-        if (minutes > 0){
-          totalEarnings +=(val.bGainHour/60)*minutes
+        if (minutes > 0) {
+          totalEarnings += (val.bGainHour / 60) * minutes;
         }
         if (seconds > 0) {
-          totalEarnings += (val.bGainHour / 3600)*seconds;
+          totalEarnings += (val.bGainHour / 3600) * seconds;
         }
 
         val.bEarnings = parseFloat(totalEarnings.toFixed(2));
@@ -118,7 +122,11 @@ function calculateEarnings(businessName) {
         moneyDiv.textContent = `Your cash: ${newMoney}₺`;
         localStorage.setItem("moneyData", newMoney);
         localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
-        alert(`${days} days ${hours} hours ${minutes} minutes ${seconds} first earnings collected ${totalEarnings.toFixed(2)}`);
+        alert(
+          `${days} days ${hours} hours ${minutes} minutes ${seconds} first earnings collected ${totalEarnings.toFixed(
+            2
+          )}`
+        );
       } else {
         const lastCollectionDate = new Date(val.bLastCollectionDate);
         const elapsedTime = now - lastCollectionDate;
@@ -127,21 +135,27 @@ function calculateEarnings(businessName) {
         const millisecondsInAMinute = 1000 * 60;
         const millisecondsInASecond = 1000;
         const days = Math.floor(elapsedTime / millisecondsInADay);
-        const hours = Math.floor((elapsedTime % millisecondsInADay) / millisecondsInAnHour);
-        const minutes = Math.floor((elapsedTime % millisecondsInAnHour) / millisecondsInAMinute);
-        const seconds = Math.floor((elapsedTime % millisecondsInAMinute) / millisecondsInASecond);
+        const hours = Math.floor(
+          (elapsedTime % millisecondsInADay) / millisecondsInAnHour
+        );
+        const minutes = Math.floor(
+          (elapsedTime % millisecondsInAnHour) / millisecondsInAMinute
+        );
+        const seconds = Math.floor(
+          (elapsedTime % millisecondsInAMinute) / millisecondsInASecond
+        );
 
-        if (days > 0){
-          totalEarnings += (val.bGainHour*24*days)
+        if (days > 0) {
+          totalEarnings += val.bGainHour * 24 * days;
         }
-        if (hours > 0){
-          totalEarnings += val.bGainHour*hours
+        if (hours > 0) {
+          totalEarnings += val.bGainHour * hours;
         }
-        if (minutes > 0){
-          totalEarnings +=(val.bGainHour/60)*minutes
+        if (minutes > 0) {
+          totalEarnings += (val.bGainHour / 60) * minutes;
         }
         if (seconds > 0) {
-          totalEarnings += (val.bGainHour / 3600)*seconds;
+          totalEarnings += (val.bGainHour / 3600) * seconds;
         }
 
         val.bEarnings = parseFloat(totalEarnings.toFixed(2));
@@ -152,21 +166,23 @@ function calculateEarnings(businessName) {
         localStorage.setItem("moneyData", newMoney);
         val.bLastCollectionDate = now;
         localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
-        alert(`${days} days ${hours} hours ${minutes} minutes ${seconds} seconds new earnings collected ${totalEarnings.toFixed(2)}`)
+        alert(
+          `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds new earnings collected ${totalEarnings.toFixed(
+            2
+          )}`
+        );
       }
     }
   });
 }
 
-
 function openMenu() {
   const ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
   modal.style.display = "flex";
-  menuButton.textContent = "Close Menu";
   let businessData = [];
 
-  if(ownBusiness == null || ownBusiness.length === 0){
-    businesses.forEach(val => {
+  if (ownBusiness == null || ownBusiness.length === 0) {
+    businesses.forEach((val) => {
       let data = {
         bName: val.name,
         bPrice: val.price,
@@ -175,28 +191,23 @@ function openMenu() {
         bLastCollectionDate: val.lastCollectionDate,
         bEarnings: val.earnings,
         bTotalEarnings: val.totalEarning,
-        bStatus: true
-      }
+        bStatus: true,
+      };
       businessData.push(data);
-    })
+    });
   } else {
     return;
   }
-  
   localStorage.setItem("ownBusiness", JSON.stringify(businessData));
-};
-
-
+}
 
 closeModal.addEventListener("click", () => {
   modal.style.display = "none";
-  menuButton.textContent = "Open Menu";
 });
 
 window.addEventListener("click", (e) => {
   if (e.target === modal) {
     modal.style.display = "none";
-    menuButton.textContent = "Open Menu";
   }
 });
 
@@ -450,7 +461,7 @@ async function resetMoney() {
     const lastTd = tds[tds.length - 1];
     lastTd.textContent = 0;
   });
-  moneyDiv.textContent = `Your cash: 300000₺`;
+  moneyDiv.textContent = `Your cash: 310000₺`;
   alert("Good Luck :)");
 }
 
@@ -483,7 +494,12 @@ function storeCoinPurchase(coinSymbol, quantity, purchasePrice, totalPrice) {
 
   storedData.forEach((val) => {
     if (val.symbol === coinSymbol) {
-      val.price = parseFloat(((val.price * val.amount + purchasePrice * quantity) / (val.amount+quantity)).toFixed(2));
+      val.price = parseFloat(
+        (
+          (val.price * val.amount + purchasePrice * quantity) /
+          (val.amount + quantity)
+        ).toFixed(2)
+      );
       val.amount += quantity;
       val.tPrice += parseFloat(totalPrice.toFixed(2));
       coinExists = true;
@@ -510,7 +526,7 @@ function storeCoinSell(coinSymbol, quantity, totalPrice) {
     if (val.symbol === coinSymbol) {
       val.amount -= quantity;
       val.tPrice = parseFloat((val.tPrice - totalPrice).toFixed(2));
-      val.price = parseFloat((val.price).toFixed(2));
+      val.price = parseFloat(val.price.toFixed(2));
 
       if (val.amount === 0) {
         itemsToRemove.push(index);
@@ -606,7 +622,7 @@ document
   });
 
 async function fetchCoinData() {
-  const url = "https://data.binance.com/api/v3/ticker/24hr"
+  const url = "https://data.binance.com/api/v3/ticker/24hr";
   const response = await fetch(url);
   const data = await response.json();
   let newData = [];
@@ -672,7 +688,9 @@ async function updateCoinPrices() {
   coinData.forEach((coin, index) => {
     const row = tableRows[index];
     row.querySelector("td:nth-child(2)").textContent = coin.askPrice;
-    row.querySelector("td:nth-child(3)").textContent = `%${coin.priceChangePercent}`;
+    row.querySelector(
+      "td:nth-child(3)"
+    ).textContent = `%${coin.priceChangePercent}`;
     row.querySelector("td:nth-child(4)").textContent = coin.lowPrice;
     row.querySelector("td:nth-child(5)").textContent = coin.highPrice;
     row.querySelector("td:nth-child(6)").textContent = coin.quoteVolume;
