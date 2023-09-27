@@ -145,6 +145,10 @@ body {
   opacity: 0.75;
 }
 
+.businessText {
+  padding: 15px 0 0 0;
+}
+
 .cardCategory .btn {
   background-color: #007bff;
   color: #fff;
