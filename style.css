@@ -21,7 +21,6 @@ body {
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.3s;
-  cursor: pointer;
   box-sizing: border-box;
 }
 
@@ -40,6 +39,7 @@ body {
   padding: 20px;
   box-sizing: border-box;
   position: relative;
+  cursor: pointer;
 }
 
 #portfolioMenu,
@@ -57,7 +57,7 @@ body {
   z-index: 999;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
-  max-height: 700px;
+  max-height: 800px;
 }
 
 .modal {
@@ -144,7 +144,7 @@ body {
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
-.buyEverything:hover+.overlay-text {
+.buyEverything:hover + .overlay-text {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.05);
 }
@@ -185,7 +185,11 @@ body {
   margin-left: 30px;
 }
 
-.btn:hover {
+.btn:hover,
+#prevPageButton:hover,
+#nextPageButton:hover,
+#prevPageButtonFolio:hover,
+#nextPageButtonFolio:hover {
   background-color: #0056b3;
 }
 
@@ -284,4 +288,18 @@ body {
 
 .red {
   color: red;
+}
+
+#prevPageButton,
+#nextPageButton,
+#prevPageButtonFolio,
+#nextPageButtonFolio {
+  background-color: #007bff;
+  color: #fff;
+  padding: 6px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
 }
