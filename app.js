@@ -69,7 +69,10 @@ modalCategories.forEach((modalCategory, index) => {
           val.bPurchaseDate = new Date();
           val.bLastCollectionDate = new Date();
           localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
-          customAlert("The purchase is successful!", "I hope you make good money. Good luck!");
+          customAlert(
+            "The purchase is successful!",
+            "I hope you make good money. Good luck!"
+          );
         } else {
           customAlert("Warning", "You don't have enough money");
         }
@@ -96,9 +99,15 @@ function calculateEarnings(businessName) {
       const lastCollectionDate = new Date(val.bLastCollectionDate);
       const elapsedTime = now - lastCollectionDate;
       const days = Math.floor(elapsedTime / millisecondsInADay);
-      const hours = Math.floor((elapsedTime % millisecondsInADay) / millisecondsInAnHour);
-      const minutes = Math.floor((elapsedTime % millisecondsInAnHour) / millisecondsInAMinute);
-      const seconds = Math.floor((elapsedTime % millisecondsInAMinute) / millisecondsInASecond);
+      const hours = Math.floor(
+        (elapsedTime % millisecondsInADay) / millisecondsInAnHour
+      );
+      const minutes = Math.floor(
+        (elapsedTime % millisecondsInAnHour) / millisecondsInAMinute
+      );
+      const seconds = Math.floor(
+        (elapsedTime % millisecondsInAMinute) / millisecondsInASecond
+      );
 
       let totalEarnings = 0;
 
@@ -122,14 +131,18 @@ function calculateEarnings(businessName) {
       moneyDiv.textContent = `Your cash: ${newMoney}₺`;
       localStorage.setItem("moneyData", newMoney);
 
-      customAlert("New Earnings Collected", `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds = ${totalEarnings.toFixed(2)}₺`);
-      
+      customAlert(
+        "New Earnings Collected",
+        `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds = ${totalEarnings.toFixed(
+          2
+        )}₺`
+      );
+
       val.bLastCollectionDate = now;
       localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
     }
   });
 }
-
 
 function openMenu() {
   const ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
@@ -162,13 +175,15 @@ function showTotalEarn() {
   let text = document.querySelectorAll(".overlay-text");
   let textArray = Array.from(text);
 
-  ownBusiness.forEach(val => {
-   textArray.forEach(el => { 
-    if(val.bStatus == false && el.textContent.includes(val.bName)){
-        el.textContent = `${val.bName} total gain: ${val.bTotalEarnings.toFixed(2)}₺`
-    } 
-  })
-})
+  ownBusiness.forEach((val) => {
+    textArray.forEach((el) => {
+      if (val.bStatus == false && el.textContent.includes(val.bName)) {
+        el.textContent = `${val.bName} total gain: ${val.bTotalEarnings.toFixed(
+          2
+        )}₺`;
+      }
+    });
+  });
 }
 
 closeModal.addEventListener("click", () => {
@@ -185,15 +200,15 @@ window.addEventListener("click", (e) => {
 
 function hideTotalEarn() {
   let ownBusiness = JSON.parse(localStorage.getItem("ownBusiness")) || [];
-  ownBusiness.forEach(val => {
-  let text = document.querySelectorAll(".overlay-text");
-  let textArray = Array.from(text);
-   textArray.forEach(el => { 
-    if(val.bStatus == false && el.textContent.includes(val.bName)){
-        el.textContent = `${val.bName}`
-    } 
-  })
-})
+  ownBusiness.forEach((val) => {
+    let text = document.querySelectorAll(".overlay-text");
+    let textArray = Array.from(text);
+    textArray.forEach((el) => {
+      if (val.bStatus == false && el.textContent.includes(val.bName)) {
+        el.textContent = `${val.bName}`;
+      }
+    });
+  });
 }
 
 let currentPage = 1;
@@ -479,12 +494,15 @@ function storeAllAction(coinSymbol, quantity, purchasePrice, action, status) {
 function storeCoinPurchase(coinSymbol, quantity, purchasePrice, totalPrice) {
   const storedData = JSON.parse(localStorage.getItem("coinPurchases")) || [];
 
-  const existingPurchase = storedData.find((purchase) => purchase.symbol === coinSymbol);
+  const existingPurchase = storedData.find(
+    (purchase) => purchase.symbol === coinSymbol
+  );
 
   if (existingPurchase) {
     existingPurchase.price = parseFloat(
       (
-        (existingPurchase.price * existingPurchase.amount + purchasePrice * quantity) /
+        (existingPurchase.price * existingPurchase.amount +
+          purchasePrice * quantity) /
         (existingPurchase.amount + quantity)
       ).toFixed(2)
     );
@@ -523,111 +541,127 @@ function storeCoinSell(coinSymbol, quantity, totalPrice) {
 }
 
 //Buy Coin
-document.querySelector("#coinTable tbody").addEventListener("click", function (event) {
-  const target = event.target;
-  const storedMoney = parseFloat(localStorage.getItem("moneyData"));
-
-  if (target.classList.contains("buyButton")) {
-    const row = target.closest("tr");
-    const coin = row.querySelector("td:first-child").textContent;
-    const quantityInput = row.querySelector(".buyInput");
-
-    const quantity = parseFloat(quantityInput.value);
-    const coinPrice = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace(/[^0-9.]/g, ""));
-
-    if (!isNaN(quantity) && quantity >= 0) {
-      const cost = quantity * coinPrice;
-
-      if (storedMoney >= cost) {
-        const updatedValue = (storedMoney - cost).toFixed(2);
-        localStorage.setItem("moneyData", updatedValue);
-        moneyDiv.textContent = `Your cash: ${updatedValue}₺`;
-
-        const updatedBasket = parseFloat(row.querySelector("td:last-child").textContent) + quantity;
-        row.querySelector("td:last-child").textContent = updatedBasket;
-
-        storeCoinPurchase(coin, quantity, coinPrice, cost);
-        storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
-        renderPortFolioPage();
-      } else {
-        customAlert("Warning", "Insufficient balance. Take a smaller amount.");
-        storeAllAction(coin, quantity, coinPrice, buyAction, rejectStatus);
-      }
-    } else {
-      customAlert("Warning", "Invalid amount. Please enter a valid amount.");
-    }
-
-    quantityInput.value = "";
-  }
-});
-
-//Sell Coin
-  document.querySelector("#coinTable tbody").addEventListener("click", function (event) {
+document
+  .querySelector("#coinTable tbody")
+  .addEventListener("click", function (event) {
     const target = event.target;
     const storedMoney = parseFloat(localStorage.getItem("moneyData"));
-  
+
+    if (target.classList.contains("buyButton")) {
+      const row = target.closest("tr");
+      const coin = row.querySelector("td:first-child").textContent;
+      const quantityInput = row.querySelector(".buyInput");
+
+      const quantity = parseFloat(quantityInput.value);
+      const coinPrice = parseFloat(
+        row.querySelector("td:nth-child(2)").textContent.replace(/[^0-9.]/g, "")
+      );
+
+      if (!isNaN(quantity) && quantity >= 0) {
+        const cost = quantity * coinPrice;
+
+        if (storedMoney >= cost) {
+          const updatedValue = (storedMoney - cost).toFixed(2);
+          localStorage.setItem("moneyData", updatedValue);
+          moneyDiv.textContent = `Your cash: ${updatedValue}₺`;
+
+          const updatedBasket =
+            parseFloat(row.querySelector("td:last-child").textContent) +
+            quantity;
+          row.querySelector("td:last-child").textContent = updatedBasket;
+
+          storeCoinPurchase(coin, quantity, coinPrice, cost);
+          storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
+          renderPortFolioPage();
+        } else {
+          customAlert(
+            "Warning",
+            "Insufficient balance. Take a smaller amount."
+          );
+          storeAllAction(coin, quantity, coinPrice, buyAction, rejectStatus);
+        }
+      } else {
+        customAlert("Warning", "Invalid amount. Please enter a valid amount.");
+      }
+
+      quantityInput.value = "";
+    }
+  });
+
+//Sell Coin
+document
+  .querySelector("#coinTable tbody")
+  .addEventListener("click", function (event) {
+    const target = event.target;
+    const storedMoney = parseFloat(localStorage.getItem("moneyData"));
+
     if (target.classList.contains("sellButton")) {
       const row = target.closest("tr");
       const coin = row.querySelector("td:first-child").textContent;
       const quantityInput = row.querySelector(".sellInput");
       const basket = parseFloat(row.querySelector("td:last-child").textContent);
-  
+
       const quantity = parseFloat(quantityInput.value);
-      const coinPrice = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace(/[^0-9.]/g, ""));
+      const coinPrice = parseFloat(
+        row.querySelector("td:nth-child(2)").textContent.replace(/[^0-9.]/g, "")
+      );
       const sellCost = coinPrice % 0.2;
-  
+
       if (!isNaN(quantity) && quantity >= 0) {
         if (basket - quantity >= 0) {
           const cost = quantity * coinPrice;
           const updatedMoney = storedMoney + cost - sellCost;
-  
+
           localStorage.setItem("moneyData", updatedMoney.toFixed(2));
           moneyDiv.textContent = `Your cash: ${updatedMoney.toFixed(2)}₺`;
-  
+
           const updatedBasket = basket - quantity;
           row.querySelector("td:last-child").textContent = updatedBasket;
-  
+
           storeCoinSell(coin, quantity, cost);
           storeAllAction(coin, quantity, coinPrice, sellAction, successStatus);
         } else {
-          customAlert("Warning", "You don't have as many coins as you want to sell.")
+          customAlert(
+            "Warning",
+            "You don't have as many coins as you want to sell."
+          );
           storeAllAction(coin, quantity, coinPrice, sellAction, rejectStatus);
         }
       } else {
-        customAlert("Warning", "Invalid amount. Please enter a valid amount.")
+        customAlert("Warning", "Invalid amount. Please enter a valid amount.");
       }
       quantityInput.value = "";
     }
   });
-  
+
 //Data
-  async function fetchCoinData() {
-    const url = "https://data.binance.com/api/v3/ticker/24hr";
-    const response = await fetch(url);
-    const data = await response.json();
-  
-    const newData = data
-      .filter((val) => {
-        const isTryCoin = val.symbol.toLowerCase().includes("try");
-        const isValidPrice = val.askPrice >= 0.01;
-        return isTryCoin && isValidPrice;
-      })
-      .map((val) => {
-        return {
-          symbol: val.symbol.slice(0, -3),
-          askPrice: parseFloat(val.askPrice).toFixed(2),
-          priceChangePercent: Intl.NumberFormat("tr-TR").format(
-            val.priceChangePercent
-          ),
-          lowPrice: Intl.NumberFormat("tr-TR").format(val.lowPrice),
-          highPrice: Intl.NumberFormat("tr-TR").format(val.highPrice),
-          quoteVolume: Intl.NumberFormat("tr-TR").format(val.quoteVolume),
-        };
-      });
-  
-    return newData;
-  }
-  
+async function fetchCoinData() {
+  const url = "https://data.binance.com/api/v3/ticker/24hr";
+  const response = await fetch(url);
+  const data = await response.json();
+
+  const newData = data
+    .filter((val) => {
+      const isTryCoin = val.symbol.toLowerCase().includes("try");
+      const isValidPrice = val.askPrice >= 0.01;
+      return isTryCoin && isValidPrice;
+    })
+    .map((val) => {
+      return {
+        symbol: val.symbol.slice(0, -3),
+        askPrice: parseFloat(val.askPrice).toFixed(2),
+        priceChangePercent: Intl.NumberFormat("tr-TR").format(
+          val.priceChangePercent
+        ),
+        lowPrice: Intl.NumberFormat("tr-TR").format(val.lowPrice),
+        highPrice: Intl.NumberFormat("tr-TR").format(val.highPrice),
+        quoteVolume: Intl.NumberFormat("tr-TR").format(val.quoteVolume),
+      };
+    });
+
+  return newData;
+}
+
 //First Render Data
 async function renderCoinTable() {
   const coinData = await fetchCoinData();
@@ -638,7 +672,7 @@ async function renderCoinTable() {
   coinData.forEach((coin) => {
     coin.basket = 0;
 
-  userCoins.forEach((val) => {
+    userCoins.forEach((val) => {
       if (coin.symbol === val.symbol) {
         coin.basket += val.amount;
       }
@@ -676,7 +710,9 @@ async function updateCoinPrices() {
   coinData.forEach((coin, index) => {
     const row = tableRows[index];
     row.querySelector("td:nth-child(2)").textContent = coin.askPrice;
-    row.querySelector("td:nth-child(3)").textContent = `%${coin.priceChangePercent}`;
+    row.querySelector(
+      "td:nth-child(3)"
+    ).textContent = `%${coin.priceChangePercent}`;
     row.querySelector("td:nth-child(4)").textContent = coin.lowPrice;
     row.querySelector("td:nth-child(5)").textContent = coin.highPrice;
     row.querySelector("td:nth-child(6)").textContent = coin.quoteVolume;
@@ -690,5 +726,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateCoinPrices, 5000);
   setInterval(renderHistoryPage, 1000);
   setInterval(renderPortFolioPage, 10000);
-  setInterval(showTotalEarn, 3000)
+  setInterval(showTotalEarn, 3000);
 });

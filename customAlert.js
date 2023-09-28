@@ -1,7 +1,7 @@
-function customAlert(tag,message,color) {
-    const modalDiv = document.createElement("div");
-    modalDiv.className = `alert-modal`;
-    modalDiv.innerHTML = `
+function customAlert(tag, message, color) {
+  const modalDiv = document.createElement("div");
+  modalDiv.className = `alert-modal`;
+  modalDiv.innerHTML = `
         <div class="alert-content ${color}">
             <h1>${tag}</h1>
             <p>${message}</p>
@@ -9,10 +9,10 @@ function customAlert(tag,message,color) {
         </div>
     `;
 
-    document.body.appendChild(modalDiv);
+  document.body.appendChild(modalDiv);
 }
 
 function closeAlert() {
-    const modalDiv = document.querySelector(".alert-modal");
-    modalDiv.remove();
+  const modalDiv = document.querySelector(".alert-modal");
+  modalDiv.remove();
 }
