@@ -12,7 +12,7 @@ const modalContent = document.querySelector(".modal-content");
 function start() {
   const storedMoney = localStorage.getItem("moneyData");
   if (storedMoney == null) {
-    localStorage.setItem("moneyData", 310000);
+    localStorage.setItem("moneyData", 500000);
   }
 }
 
@@ -69,13 +69,15 @@ modalCategories.forEach((modalCategory, index) => {
           val.bPurchaseDate = new Date();
           val.bLastCollectionDate = new Date();
           localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
-          alert("The purchase is successful. Good luck!");
+          customAlert("The purchase is successful!", "I hope you make good money. Good luck!");
         } else {
-          alert("You don't have enough money");
+          customAlert("Warning", "You don't have enough money");
         }
       } else {
         calculateEarnings(categoryName);
       }
+    } else {
+      customAlert("Warning", "You don't have enough money");
     }
   });
 });
@@ -120,13 +122,8 @@ function calculateEarnings(businessName) {
       moneyDiv.textContent = `Your cash: ${newMoney}₺`;
       localStorage.setItem("moneyData", newMoney);
 
-        alert(
-          `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds new earnings collected ${totalEarnings.toFixed(
-            2
-          )}`
-        );
+      customAlert("New Earnings Collected", `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds = ${totalEarnings.toFixed(2)}₺`);
       
-
       val.bLastCollectionDate = now;
       localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
     }
@@ -450,9 +447,9 @@ async function resetMoney() {
     const lastTd = tds[tds.length - 1];
     lastTd.textContent = 0;
   });
-  
-  moneyDiv.textContent = `Your cash: 310000₺`;
-  alert("Good Luck :)");
+
+  moneyDiv.textContent = `Your cash: 500000₺`;
+  customAlert("New Beginning", "I hope u will be more lucky!");
 }
 
 //Log All Moves
@@ -553,11 +550,11 @@ document.querySelector("#coinTable tbody").addEventListener("click", function (e
         storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
         renderPortFolioPage();
       } else {
-        alert("Insufficient balance. Take a smaller amount.");
+        customAlert("Warning", "Insufficient balance. Take a smaller amount.");
         storeAllAction(coin, quantity, coinPrice, buyAction, rejectStatus);
       }
     } else {
-      alert("Invalid amount. Please enter a valid amount.");
+      customAlert("Warning", "Invalid amount. Please enter a valid amount.");
     }
 
     quantityInput.value = "";
@@ -593,13 +590,12 @@ document.querySelector("#coinTable tbody").addEventListener("click", function (e
           storeCoinSell(coin, quantity, cost);
           storeAllAction(coin, quantity, coinPrice, sellAction, successStatus);
         } else {
-          alert("You don't have the coin you want to sell.");
+          customAlert("Warning", "You don't have as many coins as you want to sell.")
           storeAllAction(coin, quantity, coinPrice, sellAction, rejectStatus);
         }
       } else {
-        alert("Invalid amount. Please enter a valid amount.");
+        customAlert("Warning", "Invalid amount. Please enter a valid amount.")
       }
-  
       quantityInput.value = "";
     }
   });
