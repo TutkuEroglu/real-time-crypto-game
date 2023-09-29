@@ -144,7 +144,7 @@ body {
   transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
-.buyEverything:hover + .overlay-text {
+.buyEverything:hover+.overlay-text {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.05);
 }
@@ -348,6 +348,26 @@ body {
   margin-top: 10px;
 }
 
+.confetti {
+  position: absolute;
+  width: 750px;
+  height: 750px;
+  border-radius: 50%;
+  transform-origin: center;
+  z-index: 1050;
+}
+
+.coin {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  background-image: url("./assets/coin1.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 1049;
+}
+
 @media (max-width: 768px) {
   body {
     font-size: 14px;
@@ -404,6 +424,7 @@ body {
   .alert-button {
     padding: 8px 16px;
   }
+
   .modal-content {
     width: 600px;
   }
