@@ -55,8 +55,8 @@ function createBusinessCategory(business) {
               "The purchase is successful!",
               "I hope you make good money. Good luck!"
             );
-            createConfetti(val.bPrice/500);
-            createCoins(val.bPrice/500);
+            createConfetti(val.bPrice/250);
+            createCoinsQuick(val.bPrice/250);
           } else {
             customAlert("Warning", "You don't have enough money");
           }
@@ -122,7 +122,7 @@ function createBusinessCategory(business) {
           )}₺`
         );
 
-        createCoins(totalEarnings);
+        createCoinsQuick(totalEarnings, "quick");
   
         val.bLastCollectionDate = now;
         localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
