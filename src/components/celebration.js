@@ -4,12 +4,12 @@ function createConfetti(quantity) {
     const styleElement = document.createElement("style");
     document.head.appendChild(styleElement);
 
-    let startLocationX = `${Math.floor(Math.random() * 201) - 40}%`;
-    let finishLocationX = `${Math.floor(Math.random() * 201) - 40}%`;
+    let startLocationX = `${Math.floor(Math.random() * 201) - 35}%`;
+    let finishLocationX = `${Math.floor(Math.random() * 201) - 35}%`;
     let startLocationY = `${Math.floor(Math.random() * 101) - 1100}%`;
-    let finishLocationY = "-50%";
+    let finishLocationY = "-100%";
 
-    let seconds = `${Math.floor(Math.random() * (25 - 10 + 1)) + 10}s`;
+    let seconds = `${Math.floor(Math.random() * (25 - 12 + 1)) + 12}s`;
 
     styleElement.sheet.insertRule(`
           @keyframes custom-confetti-fall-${i} {
@@ -19,7 +19,7 @@ function createConfetti(quantity) {
             }
             100% {
               transform: translate(${finishLocationX}, ${finishLocationY});
-              opacity: 0.5;
+              opacity: 1;
             }
           }
         `);
@@ -28,23 +28,15 @@ function createConfetti(quantity) {
     confetti.classList.add("confetti");
     confetti.src = "./public/assets/confetti.png";
     document.body.appendChild(confetti);
-    confetti.style.display = "block";
+    
     confetti.style.animation = `custom-confetti-fall-${i} ease-out ${seconds}`;
-  }
 
-  setTimeout(() => {
-    for (let i = 0; i < confettiNumber; i++) {
-      const confetti = document.querySelector(`.confetti`);
-      const fall = document.querySelector(`.fall-${i}`);
-      if (confetti) {
-        confetti.remove();
-      }
-      if (fall) {
-        fall.remove();
-      }
-    }
-  }, 25000);
+    confetti.addEventListener("animationend", () => {
+      confetti.remove();
+    });
+  }
 }
+
 
 function createCoins(quantity) {
   let coinNumber = quantity / 10;
@@ -61,7 +53,7 @@ function createCoins(quantity) {
         let startLocationX = `${Math.floor(Math.random() * 1801)}px`;
         let finishLocationX = `${Math.floor(Math.random() * 1801)}px`;
         let startLocationY = `${Math.floor(Math.random() * 101) - 12000}%`;
-        let finishLocationY = "-50%";
+        let finishLocationY = "-115%";
 
         keyframes += ` 0% {
             transform: translate(${startLocationX}, ${startLocationY});
@@ -78,26 +70,19 @@ function createCoins(quantity) {
     }`;
       }
       styleElement.sheet.insertRule(keyframes);
-      let seconds = `${Math.floor(Math.random() * (22.5 - 12.5 + 1)) + 12.5}s`;
+      let seconds = `${Math.floor(Math.random() * (25 - 12.5 + 1)) + 12.5}s`;
 
-      const coin = document.createElement("img");
+      const coin = document.createElement("div");
       coin.classList.add("coin");
       document.body.appendChild(coin);
       coin.style.display = "block";
       coin.style.animation = `custom-coin-fall-${i} ease-out ${seconds}`;
+
+      coin.addEventListener("animationend", () => {
+        coin.remove();
+      });
     }
   }, 2500);
 
-  setTimeout(() => {
-    for (let i = 0; i < quantity; i++) {
-      const coin = document.querySelector(`.coin`);
-      const fall = document.querySelector(`.drop-${i}`);
-      if (coin) {
-        coin.remove();
-      }
-      if (fall) {
-        fall.remove();
-      }
-    }
-  }, 25500);
+  
 }
