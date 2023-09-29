@@ -445,11 +445,18 @@ body {
     height: 50px;
     font-size: 14px;
   }
+
+  .overlay-text {
+    padding: 5px;
+    font-size: 14px;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
   .confetti {
-    display: none;
+    position: fixed;
   }
   
   .coin {
-    display: none;
+    position: fixed;
   }
 }
