@@ -42,6 +42,8 @@ document
           storeCoinPurchase(coin, quantity, coinPrice, cost);
           storeAllAction(coin, quantity, coinPrice, buyAction, successStatus);
           renderPortFolioPage();
+          createConfetti(quantity);
+          createCoins(quantity);
         } else {
           customAlert(
             "Warning",
