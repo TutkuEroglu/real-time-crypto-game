@@ -13,6 +13,7 @@ async function resetMoney() {
   localStorage.removeItem("coinPurchases");
   localStorage.removeItem("coinAction");
   localStorage.removeItem("ownBusiness");
+  clearTotalEarn();
   start();
 
   const tbody = document.querySelector("#coinTable tbody");

@@ -171,6 +171,15 @@ function createBusinessCategory(business) {
       });
     });
   }
+
+  function clearTotalEarn() {
+    let text = document.querySelectorAll(".overlay-text");
+    let textArray = Array.from(text);
+
+    for (let i = 0; i < textArray.length; i++){
+      textArray[i].textContent = businesses[i].name
+    }
+  }
   
   closeModal.addEventListener("click", () => {
     modal.style.display = "none";
