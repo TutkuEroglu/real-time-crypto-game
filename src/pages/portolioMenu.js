@@ -28,7 +28,6 @@ function updatePageFolio() {
   currentPageFolio = Math.min(Math.max(currentPageFolio, 1), totalPagesFolio);
 
   const itemsPerPageFolio = 10;
-  clearPortfolioTable();
 
   const startIndex = (currentPageFolio - 1) * itemsPerPageFolio;
   const endIndex = startIndex + itemsPerPageFolio;
@@ -79,14 +78,13 @@ function clearPortfolioTable() {
 
 async function renderPortfolio(displayedDataFolio) {
   const coinData = await fetchCoinData();
+  clearPortfolioTable();
   const tableBody = document.querySelector("#ownCoinTable tbody");
   const totalBought = document.querySelector("#totalBought");
   const totalCurrent = document.querySelector("#totalCurrent");
 
   totalBought.textContent = "Total Spent: 0.00₺";
   totalCurrent.textContent = "Total Current: 0.00₺";
-
-  clearPortfolioTable();
 
   coinData.forEach((coin) => {
     coin.basket = 0;
