@@ -108,11 +108,8 @@ document
 
 //Data
 async function fetchCoinData() {
-  const url = "https://data.binance.com/api/v3/ticker/24hr";
-  const response = await fetch(url, {
-    method: "GET",
-    mode: "no-cors",
-  });
+  const url = "https://api.binance.com/api/v3/ticker/24hr";
+  const response = await fetch(url)
   const data = await response.json();
 
   const newData = data

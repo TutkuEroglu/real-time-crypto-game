@@ -1,5 +1,5 @@
 function createConfetti(quantity) {
-  let confettiNumber = quantity / 20;
+  let confettiNumber = quantity / 50;
   for (let i = 0; i < confettiNumber; i++) {
     const styleElement = document.createElement("style");
     document.head.appendChild(styleElement);
@@ -36,7 +36,7 @@ function createConfetti(quantity) {
 }
 
 function createCoins(quantity) {
-    let coinNumber = quantity / 20;
+    let coinNumber = quantity / 50;
     for (let i = 0; i < coinNumber; i++) {
       const styleElement = document.createElement("style");
       document.head.appendChild(styleElement);
