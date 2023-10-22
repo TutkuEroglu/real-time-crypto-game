@@ -75,7 +75,7 @@ const businesses = [
     id: 7,
     name: "Ibiza",
     imageUrl: "https://www.iklimhaber.org/wp-content/uploads/2019/02/ibiza.jpg",
-    text: "Ibiza - 1.200.000₺",
+    text: "Ibiza - 1.250.000₺",
     price: 1250000,
     gainPerHour: 20000,
     purchaseDate: null,

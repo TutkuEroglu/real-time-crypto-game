@@ -121,9 +121,6 @@ function createBusinessCategory(business) {
             2
           )}₺`
         );
-
-        createCoinsQuick(totalEarnings, "quick");
-  
         val.bLastCollectionDate = now;
         localStorage.setItem("ownBusiness", JSON.stringify(ownBusiness));
       }

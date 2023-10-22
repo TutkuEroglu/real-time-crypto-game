@@ -79,13 +79,3 @@ function createCoins(quantity) {
       });
     }
 }
-
-function createCoinsQuick(quantity, quick) {
-    if(!quick){
-      setTimeout(() => {
-        createCoins(quantity)
-    }, 2500);
-  } else {
-    createCoins(quantity)
-  }
-}
